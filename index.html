@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>jQuery Syntax Hightlighter</title>
+
+		<link rel="stylesheet" type="text/css" href="./css/style.css" />
+		<link rel="stylesheet" type="text/css" href="./css/jquery.syntaxhightlighter.css" />
+	</head>
+	<body>
+		<h1>jquery.hightlighter.js</h1>
+
+		<code class="php" id="test" data-title="Titel des Quellcodes">
+// if test
+
+/**
+ * if das ist noch ein Kommentar
+ */
+if($test == "test"){
+	echo $test[test];
+	if($test == 'bla'){
+		die();
+		wordwrap();
+		exit;
+		$dir = __DIR__;
+	}
+}
+		</code>
+
+		<code class="php">
+continue;
+		</code>
+
+		<div class="footer container">
+			<p>
+				&copy; 2014 <a href="http://www.mliebgott.de" target="_blank" title="mliebgott.de">mliebgott.de</a>
+			</p>
+		</div>
+		<script type="text/JavaScript" src="./js/jquery-2.1.1.min.js"></script>
+		<script type="text/JavaScript" src="./js/jquery.syntaxhightlighter.js"></script>
+		<script type="text/javascript">
+			$('code').hightlighter({mark: '6,7'});
+		</script>
+	</body>
+</html>
