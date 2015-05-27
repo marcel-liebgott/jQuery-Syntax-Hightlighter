@@ -13,6 +13,10 @@
 	};
 
 	$.fn.hightlighter = function(options){
+		if(options === null || typeof options === 'undefined'){
+			options = {};
+		}
+
 		if(this.length === 0){
 			return this;
 		}
@@ -55,10 +59,11 @@
 
 				var param = {
 					content: 	content,
-					title: 		title, 
+					title: 		title ,
+					element: 	this, 
 				};
 
-				$(this).text("");
+				$(elem).text("");
 
 				readXmlFile(lang, hightlight, param);
 			});
@@ -256,7 +261,7 @@
 			}
 
 			// highlight/mark lines
-			if(hightlighter.settings.mark !== null){
+			if(hightlighter.settings.mark !== null && typeof hightlighter.settings.mark !== 'undefined'){
 				li = markLines(hightlighter.settings.mark, li);
 			}
 
