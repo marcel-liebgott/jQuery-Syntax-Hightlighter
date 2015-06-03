@@ -7,7 +7,7 @@
 		<string>&quot;</string>
 		<string>&#039;</string>
 	</strings>
-	<keywords>
+	<keywords wordBoundarie="true">
 		<keyword>abstract</keyword>
 		<keyword>and</keyword>
 		<keyword>array</keyword>

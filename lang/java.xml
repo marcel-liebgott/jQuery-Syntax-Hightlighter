@@ -22,7 +22,7 @@
 		<operation>=</operation>
 		<operation>&lt;</operation>
 	</operations>
-	<keywords>
+	<keywords wordBoundarie="true">
 		<keyword>foreach</keyword>
 		<keyword>const</keyword>
 		<keyword>for</keyword>

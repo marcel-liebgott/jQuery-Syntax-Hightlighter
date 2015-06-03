@@ -59,8 +59,7 @@
 
 				var param = {
 					content: 	content,
-					title: 		title ,
-					element: 	this, 
+					title: 		title
 				};
 
 				$(elem).text("");
@@ -110,115 +109,139 @@
 			if(param.content !== null && param.content !== ""){
 				content = param.content;
 
-				// replace operators
-				var operators = '^(';
-				$.each(hightlighter.operations, function(key, value){
-					operators += escapeSpecialCharacters(value) + '|';
-				});
-
-				operators = operators.substring(0, operators.length - 1) + ')$';
-				var operationRegex = new RegExp(operators, 'g');
-				var style = prepareStyleAttribute(hightlighter.design.operation);
-
-				content = content.replace(operationRegex, '<span style="' + style + '">$1</span>');
-
-				// replace keywords
-				$.each(hightlighter.keywords, function(key, value){
-					var keywordRegex = new RegExp('\\b(' + identifiers + value + ')\\b', 'g');
-					var style = prepareStyleAttribute(hightlighter.design.keyword);
-
-					content = content.replace(keywordRegex, function(match){
-						return clearSpans(match, style);
+				if(hightlighter.operations.length > 0){
+					// replace operators
+					var operators = '^(';
+					$.each(hightlighter.operations, function(key, value){
+						operators += escapeSpecialCharacters(value) + '|';
 					});
-				});
 
-				// replace functions
-				$.each(hightlighter.functions, function(key, value){
-					var functionRegex = new RegExp('\\b(' + identifiers + value + ')\\b', 'g');
-					var style = prepareStyleAttribute(hightlighter.design.function);
+					operators = operators.substring(0, operators.length - 1) + ')$';
+					var operationRegex = new RegExp(operators, 'g');
+					var style = prepareStyleAttribute(hightlighter.design.operation);
 
-					content = content.replace(functionRegex, '<span style="' + style + '">' + value + '</span>');
-				});
+					content = content.replace(operationRegex, '<span style="' + style + '">$1</span>');
+				}
 
-				// replace constants
-				$.each(hightlighter.constants, function(key, value){
-					var constantRegex = new RegExp('\\b' + value + '\\b', 'g');
-					var style = prepareStyleAttribute(hightlighter.design.constant);
+				if(hightlighter.keywords.length > 0){
+					// replace keywords
+					$.each(hightlighter.keywords, function(key, value){
+						value = escapeSpecialCharacters(value);
 
-					content = content.replace(constantRegex, '<span style="' + style + '">' + value + '</span>');
-				});
+						var boundarie = (hightlighter.wordBoundaries.keyword === 'true') ? '\\b' : '';
 
-				// single line comments
-				$.each(hightlighter.sc, function(key, value){
-					var scRegex = new RegExp('((?!([^<]+)?>)' + value + '.+?\\n)', 'g');
-					var style = prepareStyleAttribute(hightlighter.design.sc);
+						var keywordRegex = new RegExp(boundarie + '(' + identifiers + value + ')' + boundarie, 'g');
 
-					content = content.replace(scRegex, function(match){
-						return clearSpans(match, style);
+						console.log("test - " + keywordRegex);
+						console.log(keywordRegex.test(content));
+
+						var style = prepareStyleAttribute(hightlighter.design.keyword);
+
+						content = content.replace(keywordRegex, function(match){
+							return clearSpans(match, style);
+						});
 					});
-				});
+				}
 
-				// multi line comments
-				$.each(hightlighter.mc, function(key, value){
-					var _regex = "(";
-					var i = 0;
-					var style = prepareStyleAttribute(hightlighter.design.mc);
+				if(hightlighter.functions.length > 0){
+					// replace functions
+					$.each(hightlighter.functions, function(key, value){
+						var functionRegex = new RegExp('\\b(' + identifiers + value + ')\\b', 'g');
+						var style = prepareStyleAttribute(hightlighter.design.function);
 
-					if(value.length == 2){
-						for(mc in value){
-							_regex += escapeSpecialCharacters(value[mc]);
+						content = content.replace(functionRegex, '<span style="' + style + '">' + value + '</span>');
+					});
+				}
 
-							if(i == 0){
-								_regex += '[\\S\\s]*?';
+				if(hightlighter.constants.length > 0){
+					// replace constants
+					$.each(hightlighter.constants, function(key, value){
+						var constantRegex = new RegExp('\\b' + value + '\\b', 'g');
+						var style = prepareStyleAttribute(hightlighter.design.constant);
+
+						content = content.replace(constantRegex, '<span style="' + style + '">' + value + '</span>');
+					});
+				}
+
+				if(hightlighter.sc.length > 0){
+					// single line comments
+					$.each(hightlighter.sc, function(key, value){
+						var scRegex = new RegExp('((?!([^<]+)?>)' + value + '.+?\\n)', 'g');
+						var style = prepareStyleAttribute(hightlighter.design.sc);
+
+						content = content.replace(scRegex, function(match){
+							return clearSpans(match, style);
+						});
+					});
+				}
+
+				if(hightlighter.mc.length > 0){
+					// multi line comments
+					$.each(hightlighter.mc, function(key, value){
+						var _regex = "(";
+						var i = 0;
+						var style = prepareStyleAttribute(hightlighter.design.mc);
+
+						if(value.length == 2){
+							for(mc in value){
+								_regex += escapeSpecialCharacters(value[mc]);
+
+								if(i == 0){
+									_regex += '[\\S\\s]*?';
+								}
+
+								i++;
 							}
-
-							i++;
 						}
-					}
 
-					_regex += ')';
+						_regex += ')';
 
-					var mcRegex = new RegExp(_regex, 'g');
+						var mcRegex = new RegExp(_regex, 'g');
 
-					content = content.replace(mcRegex, function(match){
-						return clearSpans(match, style);
+						content = content.replace(mcRegex, function(match){
+							return clearSpans(match, style);
+						});
 					});
-				});
+				}
 
-				// highlight identifiers
-				$.each(hightlighter.identifiers, function(key, value){
-					if(hightlighter.identifiers.length > 0){
-						var _identifiers = escapeSpecialCharacters(hightlighter.identifiers.join('|'));
+				if(hightlighter.identifiers.length > 0){
+					// highlight identifiers
+					$.each(hightlighter.identifiers, function(key, value){
+						if(hightlighter.identifiers.length > 0){
+							var _identifiers = escapeSpecialCharacters(hightlighter.identifiers.join('|'));
 
-						// detect identifiers which have some html code inside
-						var detectIdentifiersRegex = new RegExp(_identifiers + '{1,2}\<.*\>([_a-zA-Z][_a-zA-Z0-9]*)\<.*\>\\s', 'g');
+							// detect identifiers which have some html code inside
+							var detectIdentifiersRegex = new RegExp(_identifiers + '{1,2}\<.*\>([_a-zA-Z][_a-zA-Z0-9]*)\<.*\>\\s', 'g');
 
-						if(detectIdentifiersRegex.test(content)){
-							// remove html inside of each match
-							$.each(content.match(detectIdentifiersRegex), function(key, value){
-								var replaced = value.replace(/<.*?>/g, '');
-								replaced = replaced.replace(/<\/.*?>/g, '');
-								content = content.replace(value, replaced);
-							});
+							if(detectIdentifiersRegex.test(content)){
+								// remove html inside of each match
+								$.each(content.match(detectIdentifiersRegex), function(key, value){
+									var replaced = value.replace(/<.*?>/g, '');
+									replaced = replaced.replace(/<\/.*?>/g, '');
+									content = content.replace(value, replaced);
+								});
 
-							var identifierRegex = new RegExp('(' + _identifiers + '{1,2})([_a-zA-Z][_a-zA-Z0-9]*)', 'g');
-							var style = prepareStyleAttribute(hightlighter.design.identifier);
+								var identifierRegex = new RegExp('(' + _identifiers + '{1,2})([_a-zA-Z][_a-zA-Z0-9]*)', 'g');
+								var style = prepareStyleAttribute(hightlighter.design.identifier);
 
-							content = content.replace(identifierRegex, function(match){
-								return clearSpans(match, style);
-							});
+								content = content.replace(identifierRegex, function(match){
+									return clearSpans(match, style);
+								});
+							}
 						}
-					}
-				});
+					});
+				}
 
-				// hightlight strings
-				$.each(hightlighter.strings, function(key, value){
-					value = escapeSpecialCharacters(value);
-					var stringRegex = new RegExp(value + '([_a-zA-Z][_a-zA-Z0-9]*)' + value, 'g');
-					var style = prepareStyleAttribute(hightlighter.design.string);
+				if(hightlighter.strings.length > 0){
+					// hightlight strings
+					$.each(hightlighter.strings, function(key, value){
+						value = escapeSpecialCharacters(value);
+						var stringRegex = new RegExp(value + '([_a-zA-Z][_a-zA-Z0-9]*)' + value, 'g');
+						var style = prepareStyleAttribute(hightlighter.design.string);
 
-					content = content.replace(stringRegex, '<span style="' + style + '">' + value + '$1' + value + '</span>')
-				});
+						content = content.replace(stringRegex, '<span style="' + style + '">' + value + '$1' + value + '</span>')
+					});
+				}
 			}
 
 			// convert it to an ordered list
@@ -275,6 +298,9 @@
 		 * convert the content of the code block into an array
 		 */
 		var XmlToArray = function(xml){
+			// which source code elements need \b (word boundarie) inside his regex
+			hightlighter.wordBoundaries = [];
+
 			// get the identifier to detect variables
 			hightlighter.identifiers = [];
 			$(xml).find('identifier').each(function(){
@@ -284,6 +310,10 @@
 			});
 
 			// keywords
+			$(xml).find('keywords').each(function(){
+				hightlighter.wordBoundaries.keyword = $(this).attr('wordBoundarie');
+			});
+
 			hightlighter.keywords = [];
 			$(xml).find('keyword').each(function(){
 				hightlighter.keywords.push($(this).text());
@@ -461,6 +491,7 @@
 		 * clean up span elements because comments could be keywords to
 		 */
 		function clearSpans(match, style){
+			console.log("ClearSpans::first: " + match);
 			match = match.replace(/<span.*?>/g, "");
 			match = match.replace(/<\/span>/g, "");
 
@@ -472,12 +503,14 @@
 				match = match.trim();
 			}
 
+			console.log("match: " + match);
+
 			if(_match){
 				// rebuild styling while line breaks
 				var arr = match.split(/(\r\n|\n|\r)/g);
 
 				if(arr.length > 1){
-					var style = prepareStyleAttribute(hightlighter.design.mc);
+					style = prepareStyleAttribute(hightlighter.design.mc);
 					var res = "";
 
 					$.each(arr, function(key, value){
@@ -503,7 +536,15 @@
 			}
 
 			var ret = '<span style="' + style + '">' + match + '</span>' + (_match ? '\n' : '');
-			ret = ret.replace(/__BR__/g, '<br>');
+
+			if(_match){
+				ret = ret.replace(/__BR__/g, '<br>');
+			}
+
+			ret = ret.replace(/&lt;/g, '<');
+			ret = ret.replace(/&gt;/g, '>');
+
+			console.log("ret: " + ret);
 
 			return ret;
 		};
