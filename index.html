@@ -10,7 +10,7 @@
 	<body>
 		<h1>jquery.hightlighter.js</h1>
 
-		<code class="php" id="test" data-title="Titel des Quellcodes">
+		<code class="php" id="php" data-title="Titel des Quellcodes">
 // if test
 
 /**
@@ -27,8 +27,19 @@ if($test == "test"){
 }
 		</code>
 
-		<code class="php">
-continue;
+		<code class="java" id="java" data-title="Titel des Java-Quelltextes">
+// this is a single line comment
+
+/**
+ * and this is a multi line comment
+ */
+public abstract class Test{
+	protected final String getTest();
+
+	public Test(){
+		return "Test";
+	}
+}
 		</code>
 
 		<div class="footer container">
@@ -39,7 +50,9 @@ continue;
 		<script type="text/JavaScript" src="./js/jquery-2.1.1.min.js"></script>
 		<script type="text/JavaScript" src="./js/jquery.syntaxhightlighter.js"></script>
 		<script type="text/javascript">
-			$('code').hightlighter({mark: '6,7'});
+			$('#php').hightlighter({mark: '6,7'});
+			$('#java').hightlighter();
+			//$('code').hightlighter();
 		</script>
 	</body>
 </html>
